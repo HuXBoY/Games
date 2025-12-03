@@ -153,6 +153,9 @@ while 1:
         show_current_cards()
         input(f"{f.BLUE}Press Enter to go to the main menu . . .{s.RESET_ALL}")
 
+    elif op == "4":
+        input(f"This option is clearly not in the list bro...\nPress Enter to try again, Also open your eyes!")
+
     elif op == "5":
         show_help()
         input(f"{f.BLUE}Press Enter to go to the main menu . . .{s.RESET_ALL}")
