@@ -101,6 +101,7 @@ while 1:
     print(f"{f.GREEN}1. {f.WHITE}Start the Dungeon\n"
           f"{f.GREEN}2. {f.WHITE}Remove cards\n"
           f"{f.GREEN}3. {f.WHITE}Show current cards\n"
+          f"{f.GREEN}4. {f.WHITE}Reset Deck to default\n"
           f"{f.GREEN}5. {f.WHITE}How to Play\n"
           f"{f.RED}X. {f.WHITE}Quit")
 
@@ -169,7 +170,10 @@ while 1:
         input(f"{f.BLUE}Press Enter to go to the main menu . . .{s.RESET_ALL}")
 
     elif op == "4":
-        input(f"This option is clearly not in the list bro...\nPress Enter to try again, Also open your eyes!")
+        reset_deck()
+        clear_print(
+            f"{f.GREEN}OK\t| DECK RESET . . .{s.RESET_ALL}\n\nPress enter to go back to the main menu . . .")
+        input()
 
     elif op == "5":
         show_help()
