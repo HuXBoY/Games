@@ -103,7 +103,6 @@ def remove_card(suit, rank):
 
 
 def start_dungeon():
-    reset_deck()
     # DUNGEON
     room_number = 0
     room_cards = []
@@ -182,6 +181,7 @@ def start_dungeon():
         except:
             print(f"{f.RED}NOT A VALID INPUT{s.RESET_ALL}")
 
+
         if health < 1:
             print(f"{f.RED}YOU DIED.\n{s.RESET_ALL}")
             input()
@@ -189,9 +189,88 @@ def start_dungeon():
 
 
 def show_help():
-    clear_print(f"{f.MAGENTA}Keep in mind you can always find online tutorials on how to play the game. Just search \"How to play Scoundrel Card Game\"{s.RESET_ALL}\n\n"
-                f"{f.YELLOW} Scoundrel {s.RESET_ALL}\n"
-                f"{f.WHITE}Imagine there's some helpful tutorial here\n\n\n")
+    clear()
+    print(f"{f.CYAN}{s.BRIGHT}{'=' * 60}{s.RESET_ALL}")
+    print(f"{f.MAGENTA}{s.BRIGHT}                  SCOUNDREL - COMPUTER EDITION                  {s.RESET_ALL}")
+    print(f"{f.CYAN}{s.BRIGHT}{'=' * 60}{s.RESET_ALL}")
+    print(f"{f.YELLOW}A solo roguelike card game by Zach Gage & Kurt Bieg{s.RESET_ALL}")
+    print(f"{f.YELLOW}Python terminal version - Simplified rules for digital play{s.RESET_ALL}")
+    print()
+
+    input(f"{f.BLUE}Press Enter for Setup & Deck...{s.RESET_ALL}")
+
+    clear_print(f"{f.GREEN}{s.BRIGHT}🎮 SETUP & DECK{s.RESET_ALL}")
+    print(f"{f.WHITE}The game automatically shuffles a custom deck:{s.RESET_ALL}")
+    print()
+    print(f"{f.RED}{s.BRIGHT}♠ Spades & ♣ Clubs (Monsters):{s.RESET_ALL} {f.WHITE}1-10, Jack(11), Queen(12), King(13), Ace(14) — {f.RED}14 each (28 total){s.RESET_ALL}")
+    print(f"{f.YELLOW}{s.BRIGHT}♦ Diamonds (Weapons):{s.RESET_ALL} {f.WHITE}1-10 — {f.YELLOW}10 total{s.RESET_ALL}")
+    print(f"{f.GREEN}{s.BRIGHT}♥ Hearts (Potions):{s.RESET_ALL} {f.WHITE}1-10 — {f.GREEN}10 total{s.RESET_ALL}")
+    print()
+    print(f"{f.CYAN}Starting Health: {f.GREEN}20{s.RESET_ALL} (capped at 20){f.CYAN}{s.RESET_ALL}")
+    print(f"{f.CYAN}Deck total: 48 cards (digital shuffle){s.RESET_ALL}")
+    print()
+
+    input(f"{f.BLUE}Press Enter for Card Types & Effects...{s.RESET_ALL}")
+
+    clear_print(f"{f.GREEN}{s.BRIGHT}⚔️  CARD TYPES & EFFECTS{s.RESET_ALL}")
+    print(f"{f.RED}{s.BRIGHT}{'=' * 20} MONSTERS ♠♣ {'=' * 20}{s.RESET_ALL}{s.RESET_ALL}")
+    print(f"{f.RED}Deal damage = rank value (e.g. 10=10, Jack=11, Ace=14){s.RESET_ALL}")
+    print()
+    print(f"{f.YELLOW}{s.BRIGHT}{'=' * 18} WEAPONS ♦ {'=' * 18}{s.RESET_ALL}{s.RESET_ALL}")
+    print(f"{f.YELLOW}Equip automatically — replaces old weapon & resets 'monster limit'{s.RESET_ALL}")
+    print(f"{f.YELLOW}Reduces damage from future monsters{s.RESET_ALL}")
+    print()
+    print(f"{f.GREEN}{s.BRIGHT}{'=' * 17} POTIONS ♥ {'=' * 17}{s.RESET_ALL}{s.RESET_ALL}")
+    print(f"{f.GREEN}Heal = rank value (stacks all in room!){s.RESET_ALL}")
+    print(f"{f.GREEN}Note: Unlike physical rules, {s.BRIGHT}ALL potions heal{s.RESET_ALL} — no limit per turn.{s.RESET_ALL}")
+    print()
+
+    input(f"{f.BLUE}Press Enter for Gameplay...{s.RESET_ALL}")
+
+    clear_print(f"{f.GREEN}{s.BRIGHT}🕹️  GAMEPLAY{s.RESET_ALL}")
+    print(f"{f.WHITE}1. Rooms auto-generate: {s.BRIGHT}4 cards shown, numbered 1-4{s.RESET_ALL}")
+    print(f"{f.WHITE}2. Enter number to {s.BRIGHT}PLAY (resolve) that card{s.RESET_ALL}{f.WHITE}.{s.RESET_ALL}")
+    print(f"{f.WHITE}3. Room shrinks. When there is only 1 card in the room: {s.BRIGHT}adds new cards to fill 4{s.RESET_ALL}")
+    print(f"{f.WHITE}4. {s.BRIGHT}Order matters!{s.RESET_ALL} Play weapons/potions first? Save weak monsters for weapon?{s.RESET_ALL}")
+    print()
+    print(f"{f.MAGENTA}{s.BRIGHT}No 'avoid' rooms in this version — pure dungeon crawl!{s.RESET_ALL}")
+    print()
+
+    input(f"{f.BLUE}Press Enter for Monster Fighting...{s.RESET_ALL}")
+
+    clear_print(f"{f.RED}{s.BRIGHT}👹 MONSTER FIGHTING DETAILS{s.RESET_ALL}")
+    print(f"{f.WHITE}When playing ♠/♣:{s.RESET_ALL}")
+    print()
+    print(f"{f.CYAN}• {s.BRIGHT}No weapon or monster rank highter than last monster defeated with weapon?{s.RESET_ALL} {f.RED}Full damage!{s.RESET_ALL}")
+    print(f"{f.CYAN}• {s.BRIGHT}Weapon equipped AND rank lower than last defeated monster?{s.RESET_ALL} Damage = {f.RED}[monster rank] - [weapon] -> if <0 it will {s.BRIGHT}NOT{s.RESET_ALL} Heal you. it just won't do damage{s.RESET_ALL}")
+    print(f"{f.CYAN}  → Updates 'last defeated' to this monster's rank{s.RESET_ALL}")
+    print()
+    print(f"{f.YELLOW}New weapon always resets 'last defeated' to high (15){s.RESET_ALL}")
+    print()
+    print(f"{f.RED}{s.BRIGHT}EXAMPLE:{s.RESET_ALL}")
+    print(f"{f.WHITE}Equip 5♦ → Can fight any monster first time.{s.RESET_ALL}")
+    print(f"{f.RED}Play 3♠: 3 < 15 → dmg = max(0,3-5)=0, last=3{s.RESET_ALL}")
+    print(f"{f.RED}Play Jack♠ (11): 11 ≮ 3 → full 11 dmg{s.RESET_ALL}")
+    print(f"{f.RED}Play 2♠: 2 < 3 → dmg = max(0, 2-5) = 0, last=2{s.RESET_ALL}")
+    print()
+    print(f"{f.YELLOW}Note: Strict {s.BRIGHT}'<'{s.RESET_ALL} — can't repeat exact rank!{s.RESET_ALL}")
+
+    input(f"{f.BLUE}Press Enter for Win/Lose...{s.RESET_ALL}")
+
+    clear_print(f"{f.GREEN}{s.BRIGHT}🏆 WIN & LOSE{s.RESET_ALL}")
+    print(f"{f.GREEN}{s.BRIGHT}WIN:{s.RESET_ALL} Clear deck (≤2 cards left) with room <2 → {f.GREEN}'Cleared with X health!'{s.RESET_ALL}")
+    print()
+    print(f"{f.RED}{s.BRIGHT}LOSE:{s.RESET_ALL} Health <1 → {f.RED}'YOU DIED'{s.RESET_ALL}")
+    print()
+    print(f"{f.CYAN}Score = remaining health (no negative/monster sum in this version){s.RESET_ALL}")
+    print()
+    print(f"{f.YELLOW}{s.BRIGHT}TIPS:{s.RESET_ALL}")
+    print(f"{f.WHITE}• Use {s.BRIGHT}option 2/3/4{s.RESET_ALL} to edit deck & practice!{s.RESET_ALL}")
+    print(f"{f.WHITE}• {s.BRIGHT}DEBUG{s.RESET_ALL} info shown during play (rank/suit types){s.RESET_ALL}")
+    print(f"{f.WHITE}• Search '{s.BRIGHT}How to play Scoundrel Card Game{s.RESET_ALL}' for original physical rules!{s.RESET_ALL}")
+    print()
+
+    input(f"{f.BLUE}Press Enter to return...{s.RESET_ALL}")
 
 
 # MAIN LOOP
@@ -276,7 +355,6 @@ while 1:
 
     elif op == "5":
         show_help()
-        input(f"{f.BLUE}Press Enter to go to the main menu . . .{s.RESET_ALL}")
 
     elif op == "X":
         clear_print(f"{f.RED}- - - Quitted - - -{s.RESET_ALL}")
