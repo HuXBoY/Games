@@ -194,7 +194,7 @@ def show_help():
     print(f"{f.MAGENTA}{s.BRIGHT}                  SCOUNDREL - COMPUTER EDITION                  {s.RESET_ALL}")
     print(f"{f.CYAN}{s.BRIGHT}{'=' * 60}{s.RESET_ALL}")
     print(f"{f.YELLOW}A solo roguelike card game by Zach Gage & Kurt Bieg{s.RESET_ALL}")
-    print(f"{f.YELLOW}Python terminal version - Simplified rules for digital play{s.RESET_ALL}")
+    print(f"{f.YELLOW}    Python terminal version - Built by Hu-Bo-    {s.RESET_ALL}")
     print()
 
     input(f"{f.BLUE}Press Enter for Setup & Deck...{s.RESET_ALL}")
