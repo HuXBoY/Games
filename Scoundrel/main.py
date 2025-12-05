@@ -1,6 +1,8 @@
-import os
-from colorama import Fore as f
 from colorama import Style as s
+from colorama import Back as b
+from colorama import Fore as f
+import random
+import os
 
 
 def clear():
@@ -12,12 +14,23 @@ def clear_print(text):
     print(text)
 
 
-# CARDS
 Suits = ["♠ Spades", "♣ Clubs", "♥ Hearts", "♦ Diamonds"]
-Spades = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-Clubs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-Hearts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-Diamonds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+suits_cards = {
+    "Spades": list(range(1, 15)),      # 1 to 14
+    "Clubs": list(range(1, 15)),
+    "Hearts": list(range(1, 11)),      # 1 to 10
+    "Diamonds": list(range(1, 11)),
+}
+
+
+def reset_deck():
+    global suits_cards
+    suits_cards = {
+        "Spades": list(range(1, 15)),
+        "Clubs": list(range(1, 15)),
+        "Hearts": list(range(1, 11)),
+        "Diamonds": list(range(1, 11)),
+    }
 
 
 def get_suit_color(suit: str):
@@ -27,56 +40,52 @@ def get_suit_color(suit: str):
         return "Red"
 
 
+def get_random_card():
+    rand_suit_choice = random.choice(Suits)
+    suit_symbol = rand_suit_choice[:2]
+    suit_name = rand_suit_choice[2:]
+
+    rank = random.choice(suits_cards[suit_name])
+    return f"{rank} {suit_symbol}"
+
+
+def rank_to_name(rank: int) -> str:
+    names = {11: "Jack", 12: "Queen", 13: "King", 14: "Ace"}
+    return names.get(rank, str(rank))
+
+
 def show_current_cards():
     clear_print(f"{f.GREEN}-> Current Cards in the deck :\n")
-    for suit in Suits:
-        if get_suit_color(suit[2:]) == "Black":
-            print(f"{f.WHITE}    {suit}:")
-        else:
-            print(f"{f.RED}    {suit}:")
-        for card in eval(suit[1:]):
-            if card > 10 or card == str:
-                if card == 11:
-                    card = "Jack"
-                elif card == 12:
-                    card = "Queen"
-                elif card == 13:
-                    card = "King"
-                elif card == 14:
-                    card = "Ace"
-                else:
-                    card = "Unknown"
-            print(f"        {card} {suit[:1]}", end="")
+    for suit_display in Suits:
+        symbol = suit_display[:2]
+        name = suit_display[2:]
+        color = f.WHITE if get_suit_color(name) == "Black" else f.RED
+        print(f"{color}    {suit_display}:")
+        for rank in suits_cards[name]:
+            card_name = rank_to_name(rank)
+            print(f"        {card_name} {symbol}", end="")
         print(f"\n{s.RESET_ALL}")
 
 
 def draw_card(rank: int, suit: str):
-    # print(f"{f.MAGENTA}DEBUG\t| rank: {rank}, suit: {suit}")
-    suit_name = None
-    if suit == "S" or suit == "s":
-        suit = Spades
-        suit_name = "Spades"
-    elif suit == "C" or suit == "c":
-        suit = Clubs
-        suit_name = "Clubs"
-    elif suit == "H" or suit == "h":
-        suit = Hearts
-        suit_name = "Hearts"
-    elif suit == "D" or suit == "d":
-        suit = Diamonds
-        suit_name = "Diamonds"
+    suit_map = {
+        "S": ("Spades", f.WHITE),
+        "C": ("Clubs", f.WHITE),
+        "H": ("Hearts", f.RED),
+        "D": ("Diamonds", f.RED),
+    }
+    if suit.upper() not in suit_map:
+        print(f"{f.RED}ERROR \t| Invalid suit!{s.RESET_ALL}")
+        return
 
-    # print(f"{f.MAGENTA}DEBUG2\t| rank: {rank}, type: {type(rank)}; suit: {suit}, type: {type(suit)}")
-
-    if rank in suit:
-        suit.remove(rank)
+    suit_name, _ = suit_map[suit.upper()]
+    if rank in suits_cards[suit_name]:
+        suits_cards[suit_name].remove(rank)
         clear()
         show_current_cards()
         print(f"\n{f.GREEN}OK \t| Removed {rank} of {suit_name}{s.RESET_ALL}")
-        # do = input("Enter to go back to main menu . . .")
     else:
-        print(
-            f"{f.RED}ERROR \t| Either that card does not exist or there's an Error!{s.RESET_ALL}")
+        print(f"{f.RED}ERROR \t| Card not in deck!{s.RESET_ALL}")
 
 
 def show_help():
@@ -85,7 +94,9 @@ def show_help():
                 f"{f.WHITE}Imagine there's some helpful tutorial here\n\n\n")
 
 
+# MAIN LOOP
 while 1:
+    # AVAILABLE OPTIONS
     clear_print(f"{f.GREEN}Choose One of the options: \n")
     print(f"{f.GREEN}1. {f.WHITE}Start the Dungeon\n"
           f"{f.GREEN}2. {f.WHITE}Remove cards\n"
@@ -95,9 +106,13 @@ while 1:
 
     op = input(f"\n{f.MAGENTA}--> {f.WHITE}").upper()
 
+    # OPTION CHOSEN
     if op == "1":
         clear_print(
-            f"{f.RED}Starting the dungeon is not available yet . . .{s.RESET_ALL}")
+            f"{f.GREEN}OK\t| Starting the dungeon . . .{s.RESET_ALL}")
+        print(f"{f.MAGENTA} Room #1: ")
+
+        # STAY IN THE DUNGEON
         input(f"{f.BLUE}Press Enter to go to the main menu . . .{s.RESET_ALL}")
 
     elif op == "2":
