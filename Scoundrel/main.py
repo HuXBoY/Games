@@ -66,27 +66,6 @@ def show_current_cards():
         print(f"\n{s.RESET_ALL}")
 
 
-def draw_card(rank: int, suit: str):
-    suit_map = {
-        "S": ("Spades", f.WHITE),
-        "C": ("Clubs", f.WHITE),
-        "H": ("Hearts", f.RED),
-        "D": ("Diamonds", f.RED),
-    }
-    if suit.upper() not in suit_map:
-        print(f"{f.RED}ERROR \t| Invalid suit!{s.RESET_ALL}")
-        return
-
-    suit_name, _ = suit_map[suit.upper()]
-    if rank in suits_cards[suit_name]:
-        suits_cards[suit_name].remove(rank)
-        clear()
-        show_current_cards()
-        print(f"\n{f.GREEN}OK \t| Removed {rank} of {suit_name}{s.RESET_ALL}")
-    else:
-        print(f"{f.RED}ERROR \t| Card not in deck!{s.RESET_ALL}")
-
-
 def get_random_card():
     suit = random.choice(list(suits_cards.keys()))
     while len(suits_cards[suit]) < 1:
@@ -96,6 +75,14 @@ def get_random_card():
 
 
 def remove_card(suit, rank):
+    if suit == "S":
+        suit = "Spades"
+    elif suit == "C":
+        suit = "Clubs"
+    elif suit == "H":
+        suit = "Hearts"
+    elif suit == "D":
+        suit = "Diamonds"
     try:
         suits_cards[suit].remove(rank)
     except:
@@ -108,6 +95,8 @@ def start_dungeon():
     room_cards = []
     # PLAYER
     health = 20
+    # MANAGER
+    new_room = False
 
     def show_health():
         return f"{s.RESET_ALL}You have {f.GREEN if health >= 10 else f.RED}{health}{s.RESET_ALL} Health."
@@ -115,10 +104,12 @@ def start_dungeon():
     last_card_hit_with_weapon = 15
 
     clear_print(
-        f"{f.BLUE}Dungeon Started\t|{s.RESET_ALL} {show_health()}")
+        f"{f.BLUE}Dungeon Started{s.RESET_ALL}")
     while 1:
         if len(room_cards) < 2 and get_remaining_cards() > 2:
             room_number += 1
+            if room_number > 1:
+                new_room = True
             while len(room_cards) < 4:
                 suit, rank = get_random_card()
                 remove_card(suit, rank)
@@ -130,7 +121,11 @@ def start_dungeon():
                 f"{f.GREEN}YOU CLEARED THE DUNGEON WITH {health} HEALTH REMAINING.\n|\tYou Win!\n{s.RESET_ALL}")
             break
 
-        print(f"{f.MAGENTA}\nRoom #{room_number}: ")
+        if new_room:
+            clear_print(f"{f.MAGENTA}\nRoom #{room_number}: ")
+            new_room = False
+        else:
+            print(f"{f.MAGENTA}\nRoom #{room_number}: ")
         c = 1
         for card in room_cards:
             print(
@@ -159,7 +154,9 @@ def start_dungeon():
 
             if played_card_suit in ["C", "S"]:
                 if played_card_rank < last_card_hit_with_weapon and equipped_weapon > 0:
-                    health -= played_card_rank - equipped_weapon if played_card_rank - equipped_weapon > 0 else 0
+                    health -= played_card_rank - \
+                        equipped_weapon if played_card_rank - equipped_weapon > 0 else 0
+
                     print(
                         f"You have been hit for {played_card_rank} - {equipped_weapon} = {played_card_rank - equipped_weapon}. {show_health()}")
                     last_card_hit_with_weapon = played_card_rank
@@ -179,8 +176,7 @@ def start_dungeon():
                 print(
                     f"Healed for: {f.GREEN}{played_card_rank}{s.RESET_ALL}. {show_health()}")
         except:
-            print(f"{f.RED}NOT A VALID INPUT{s.RESET_ALL}")
-
+            print(f"{f.WHITE + b.RED}NOT A VALID INPUT{s.RESET_ALL}")
 
         if health < 1:
             print(f"{f.RED}YOU DIED.\n{s.RESET_ALL}")
@@ -242,7 +238,8 @@ def show_help():
     print(f"{f.WHITE}When playing ♠/♣:{s.RESET_ALL}")
     print()
     print(f"{f.CYAN}• {s.BRIGHT}No weapon or monster rank highter than last monster defeated with weapon?{s.RESET_ALL} {f.RED}Full damage!{s.RESET_ALL}")
-    print(f"{f.CYAN}• {s.BRIGHT}Weapon equipped AND rank lower than last defeated monster?{s.RESET_ALL} Damage = {f.RED}[monster rank] - [weapon] -> if <0 it will {s.BRIGHT}NOT{s.RESET_ALL} Heal you. it just won't do damage{s.RESET_ALL}")
+    print(
+        f"{f.CYAN}• {s.BRIGHT}Weapon equipped AND rank lower than last defeated monster?{s.RESET_ALL} Damage = {f.RED}[monster rank] - [weapon] -> if <0 it will {s.BRIGHT}NOT{s.RESET_ALL} Heal you. it just won't do damage{s.RESET_ALL}")
     print(f"{f.CYAN}  → Updates 'last defeated' to this monster's rank{s.RESET_ALL}")
     print()
     print(f"{f.YELLOW}New weapon always resets 'last defeated' to high (15){s.RESET_ALL}")
@@ -335,7 +332,17 @@ while 1:
                             f"{f.RED}NOT A NUMBER: {f.BLUE}Select card rank [1-14]:\t{s.RESET_ALL}", end="")
 
                 if rank_to_remove != "X":
-                    draw_card(rank_to_remove, suit_to_remove)
+                    remove_card(suit_to_remove, rank_to_remove)
+                    if suit_to_remove == "S":
+                        suit_to_remove = "Spades"
+                    elif suit_to_remove == "C":
+                        suit_to_remove = "Clubs"
+                    elif suit_to_remove == "H":
+                        suit_to_remove = "Hearts"
+                    elif suit_to_remove == "D":
+                        suit_to_remove = "Diamonds"
+                    print(
+                        f"{s.BRIGHT + f.YELLOW}The card [{rank_to_remove} of {suit_to_remove}] Removed . . .{s.RESET_ALL}")
                     input(f"{f.BLUE}Press enter to continue . . .{s.RESET_ALL}")
                 else:
                     canceled = True
