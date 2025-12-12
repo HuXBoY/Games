@@ -1,6 +1,7 @@
 from colorama import Style as s
 from colorama import Back as b
 from colorama import Fore as f
+from time import sleep
 import random
 import os
 
@@ -95,17 +96,50 @@ def start_dungeon():
     room_cards = []
     # PLAYER
     health = 20
+    equipped_weapon = 0
+    last_card_hit_with_weapon = 15
     # MANAGER
     new_room = False
 
     def show_health():
         return f"{s.RESET_ALL}You have {f.GREEN if health >= 10 else f.RED}{health}{s.RESET_ALL} Health."
-    equipped_weapon = 0
-    last_card_hit_with_weapon = 15
 
+    def show_stats():
+        texts = [f"Health: {f.GREEN if health > 10 else f.RED}{health}{f.RESET}",
+                 f"Equipped weapon: {equipped_weapon}",
+                 f"Last hit with weapon: {None if last_card_hit_with_weapon == 15 else last_card_hit_with_weapon} {s.RESET_ALL}"]
+        line = 1
+        for text in texts:
+            print(f"\033[{line};1H{text}\n")
+            line += 1
+
+    def show_help():
+        texts = ["Name -> Rank",
+                 "Jack -> 11",
+                 "Queen -> 12",
+                 "King -> 13",
+                 "Ace -> 14"]
+        line = 1
+        for text in texts:
+            print(
+                f"\033[{line};{os.get_terminal_size().columns}H{"\b" * len(list(text))}{text}")
+            line += 1
+
+    h_center = os.get_terminal_size().lines // 2
+    w_center = os.get_terminal_size().columns // 2
+    time_to_start = 3
     clear_print(
-        f"{f.BLUE}Dungeon Started{s.RESET_ALL}")
+        f"\033[{h_center};{w_center}H{"\b" * (len(list(" Please go Fullscreen "))//2)}{b.YELLOW}{f.BLACK} Please go Fullscreen {s.RESET_ALL}")
+    print(f"\033[{h_center+1};{w_center}H{"\b" * (len(list(f" Starting in {time_to_start} Seconds! "))//2)}{b.MAGENTA} Starting in \033[s{time_to_start} Seconds! {s.RESET_ALL}")
+    while time_to_start > -1:
+        h_center = os.get_terminal_size().lines // 2
+        w_center = os.get_terminal_size().columns // 2
+        sleep(1)
+        print(f"\033[u{time_to_start}")
+        time_to_start -= 1
+    print(s.RESET_ALL)
     while 1:
+        clear()
         if len(room_cards) < 2 and get_remaining_cards() > 2:
             room_number += 1
             if room_number > 1:
@@ -122,17 +156,20 @@ def start_dungeon():
             break
 
         if new_room:
-            clear_print(f"{f.MAGENTA}\nRoom #{room_number}: ")
+            clear_print(f"{f.MAGENTA}{"\n" * 5}Room #{room_number}: ")
             new_room = False
         else:
-            print(f"{f.MAGENTA}\nRoom #{room_number}: ")
+            print(f"{f.MAGENTA}{"\n" * 5}Room #{room_number}: ")
         c = 1
         for card in room_cards:
             print(
                 f"{f.WHITE if card.split()[-1][0].upper() in ["S", "C"] else f.RED}{c}->\t|\t{card}\t\t|\n{s.RESET_ALL}")
             c += 1
         c = 1
-        card_to_play = input(f"Which card to play: ")
+        show_stats()
+        show_help()
+        card_to_play = input(
+            f"\033[{os.get_terminal_size().lines};1HWhich card to play: ")
         try:
             card_to_play = int(card_to_play) - 1
             played_card = room_cards[card_to_play]
@@ -150,7 +187,7 @@ def start_dungeon():
             else:
                 played_card_rank = int(played_card_rank)
             played_card_suit = played_card.split()[-1][0].upper()
-            print(f"You Played {played_card}\t**DEBUG\t|\tRank: {played_card_rank}, Type: {type(played_card_rank)}\t|\tSuit: {played_card_suit}, Type: {type(played_card_suit)}")
+            print(f"You Played {played_card}")
 
             if played_card_suit in ["C", "S"]:
                 if played_card_rank < last_card_hit_with_weapon and equipped_weapon > 0:
@@ -162,6 +199,7 @@ def start_dungeon():
                     last_card_hit_with_weapon = played_card_rank
                 else:
                     health -= played_card_rank
+                    health = max(0, health)
                     print(
                         f"You have been hit for {played_card_rank}. {show_health()}")
             elif played_card_suit == "D":
