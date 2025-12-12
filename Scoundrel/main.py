@@ -17,10 +17,10 @@ def clear_print(text):
 
 Suits = ["♠ Spades", "♣ Clubs", "♥ Hearts", "♦ Diamonds"]
 suits_cards = {
-    "Spades": list(range(1, 15)),      # 1 to 14
-    "Clubs": list(range(1, 15)),
-    "Hearts": list(range(1, 11)),      # 1 to 10
-    "Diamonds": list(range(1, 11)),
+    "Spades": list(range(1, 1)),      # 1 to 14
+    "Clubs": list(range(1, 5)),
+    "Hearts": list(range(1, 1)),      # 1 to 10
+    "Diamonds": list(range(1, 1)),
 }
 
 
@@ -98,6 +98,7 @@ def start_dungeon():
     health = 20
     equipped_weapon = 0
     last_card_hit_with_weapon = 15
+    last_card_played = None
     # MANAGER
     new_room = False
 
@@ -105,29 +106,51 @@ def start_dungeon():
         return f"{s.RESET_ALL}You have {f.GREEN if health >= 10 else f.RED}{health}{s.RESET_ALL} Health."
 
     def show_stats():
-        texts = [f"Health: {f.GREEN if health > 10 else f.RED}{health}{f.RESET}",
+        texts = [f"Health: {f.GREEN}{health} {"▰" * health}{f.WHITE}{"▱" * (20 - health)} 20",
                  f"Equipped weapon: {equipped_weapon}",
-                 f"Last hit with weapon: {None if last_card_hit_with_weapon == 15 else last_card_hit_with_weapon} {s.RESET_ALL}"]
+                 f"Last hit with weapon: {None if last_card_hit_with_weapon == 15 else last_card_hit_with_weapon} {s.RESET_ALL}",
+                 f"Last card played: {last_card_played}"]
         line = 1
         for text in texts:
             print(f"\033[{line};1H{text}\n")
             line += 1
 
     def show_help():
-        texts = ["Name -> Rank",
-                 "Jack -> 11",
-                 "Queen -> 12",
-                 "King -> 13",
-                 "Ace -> 14"]
+        texts = ["Name  ->  Rank",
+                 "Jack  ->   11 ",
+                 "Queen ->   12 ",
+                 "King  ->   13 ",
+                 "Ace   ->   14 "]
         line = 1
         for text in texts:
             print(
                 f"\033[{line};{os.get_terminal_size().columns}H{"\b" * len(list(text))}{text}")
             line += 1
+        side_bar_width = 20
+        cards_help_section_height = 7
+        for lines in range(os.get_terminal_size().lines - 1):
+            if lines + 1 == cards_help_section_height:
+                print(f"\033[{lines+1};{os.get_terminal_size().columns - side_bar_width}H┣")
+            else:
+                print(f"\033[{lines+1};{os.get_terminal_size().columns - side_bar_width}H┃")
+        for columns in range(side_bar_width):
+            print(f"\033[{cards_help_section_height};{os.get_terminal_size().columns - side_bar_width + (columns + 1)}H━")
+
+        ################################
+        #  GET FIXING THIS PART FIRST  #
+        ################################
+        # PLAYED CARDS SHOWN IN A LIST #
+        ################################
+
+        # cards_played = []
+        # for text in texts:
+        #     print(
+        #         f"\033[{line};{os.get_terminal_size().columns}H{"\b" * len(list(text))}{text}")
+        #     line += 1
 
     h_center = os.get_terminal_size().lines // 2
     w_center = os.get_terminal_size().columns // 2
-    time_to_start = 3
+    time_to_start = 1
     clear_print(
         f"\033[{h_center};{w_center}H{"\b" * (len(list(" Please go Fullscreen "))//2)}{b.YELLOW}{f.BLACK} Please go Fullscreen {s.RESET_ALL}")
     print(f"\033[{h_center+1};{w_center}H{"\b" * (len(list(f" Starting in {time_to_start} Seconds! "))//2)}{b.MAGENTA} Starting in \033[s{time_to_start} Seconds! {s.RESET_ALL}")
@@ -151,8 +174,10 @@ def start_dungeon():
                 room_cards.append(str(rank) + " of " + suit)
         # WIN CONDITION
         elif len(room_cards) < 2 and get_remaining_cards() <= 2:
-            print(
-                f"{f.GREEN}YOU CLEARED THE DUNGEON WITH {health} HEALTH REMAINING.\n|\tYou Win!\n{s.RESET_ALL}")
+            win_texts = [f"YOU CLEARED THE DUNGEON WITH {f.GREEN}{health}{s.RESET_ALL} HEALTH REMAINING.",
+                         "You win !"]
+            clear_print(f"\033[{h_center};{w_center}H{"\b" * ( len(list(win_texts[0])) // 2 - 5)}{win_texts[0]}")
+            print(f"\033[{h_center + 1};{w_center}H{"\b" * ( len(list(win_texts[1])) // 2)}{win_texts[1]}")
             break
 
         if new_room:
@@ -187,6 +212,7 @@ def start_dungeon():
             else:
                 played_card_rank = int(played_card_rank)
             played_card_suit = played_card.split()[-1][0].upper()
+            last_card_played = played_card
             print(f"You Played {played_card}")
 
             if played_card_suit in ["C", "S"]:
@@ -327,7 +353,7 @@ while 1:
         start_dungeon()
 
         # STAY IN THE DUNGEON
-        input(f"{f.BLUE}Press Enter to go to the main menu . . .{s.RESET_ALL}")
+        input(f"\033[{os.get_terminal_size().lines};{os.get_terminal_size().columns // 2 - len(list(" Press Enter to go to the main menu . . . ")) // 2}H{b.BLUE}{f.WHITE} Press Enter to go to the main menu . . . {s.RESET_ALL}")
 
     elif op == "2":
         while 1:
