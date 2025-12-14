@@ -5,6 +5,11 @@ from time import sleep
 import random
 import os
 
+# SYS/TERMINAL VARS
+h_center = os.get_terminal_size().lines // 2
+w_center = os.get_terminal_size().columns // 2
+time_to_start = 1
+
 
 def clear():
     os.system('cls')
@@ -17,10 +22,10 @@ def clear_print(text):
 
 Suits = ["♠ Spades", "♣ Clubs", "♥ Hearts", "♦ Diamonds"]
 suits_cards = {
-    "Spades": list(range(1, 1)),      # 1 to 14
-    "Clubs": list(range(1, 5)),
-    "Hearts": list(range(1, 1)),      # 1 to 10
-    "Diamonds": list(range(1, 1)),
+    "Spades": list(range(1, 15)),      # 1 to 14
+    "Clubs": list(range(1, 15)),
+    "Hearts": list(range(1, 11)),      # 1 to 10
+    "Diamonds": list(range(1, 11)),
 }
 
 
@@ -101,6 +106,8 @@ def start_dungeon():
     last_card_played = None
     # MANAGER
     new_room = False
+    cards_played = []
+    
 
     def show_health():
         return f"{s.RESET_ALL}You have {f.GREEN if health >= 10 else f.RED}{health}{s.RESET_ALL} Health."
@@ -114,6 +121,7 @@ def start_dungeon():
         for text in texts:
             print(f"\033[{line};1H{text}\n")
             line += 1
+        
 
     def show_help():
         texts = ["Name  ->  Rank",
@@ -136,31 +144,28 @@ def start_dungeon():
         for columns in range(side_bar_width):
             print(f"\033[{cards_help_section_height};{os.get_terminal_size().columns - side_bar_width + (columns + 1)}H━")
 
-        ################################
-        #  GET FIXING THIS PART FIRST  #
-        ################################
-        # PLAYED CARDS SHOWN IN A LIST #
-        ################################
+        remaining_cards = len(suits_cards["Spades"]) + len(suits_cards["Clubs"]) + len(suits_cards["Diamonds"]) + len(suits_cards["Hearts"])
+        remaining_cards_text = f"Remaining cards: {remaining_cards}"
+        print(f"\033[1;{os.get_terminal_size().columns - ( side_bar_width + 1 )}H\033[{len(list(remaining_cards_text))}D{remaining_cards_text}")
 
-        # cards_played = []
-        # for text in texts:
-        #     print(
-        #         f"\033[{line};{os.get_terminal_size().columns}H{"\b" * len(list(text))}{text}")
-        #     line += 1
+        section_start_line = 10
+        line = section_start_line
+        section_height = os.get_terminal_size().lines - ( section_start_line + 1 )
+        if len(cards_played) > 0:
+            if len(cards_played) < section_height:
+                cards_played.reverse()
+                for card in cards_played:
+                    print(f"\033[{line};{os.get_terminal_size().columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(card.strip())))}C{card.strip()}")
+                    line += 1
+                cards_played.reverse()
+            else:
+                cards_played.reverse()
+                for i in range(section_height - 1):
+                    print(f"\033[{line};{os.get_terminal_size().columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(cards_played[i].strip())))}C{cards_played[i].strip()}")
+                    line += 1
+                print(f"\033[{line};{os.get_terminal_size().columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(cards_played[i].strip())))}C . . .")
+                cards_played.reverse()
 
-    h_center = os.get_terminal_size().lines // 2
-    w_center = os.get_terminal_size().columns // 2
-    time_to_start = 1
-    clear_print(
-        f"\033[{h_center};{w_center}H{"\b" * (len(list(" Please go Fullscreen "))//2)}{b.YELLOW}{f.BLACK} Please go Fullscreen {s.RESET_ALL}")
-    print(f"\033[{h_center+1};{w_center}H{"\b" * (len(list(f" Starting in {time_to_start} Seconds! "))//2)}{b.MAGENTA} Starting in \033[s{time_to_start} Seconds! {s.RESET_ALL}")
-    while time_to_start > -1:
-        h_center = os.get_terminal_size().lines // 2
-        w_center = os.get_terminal_size().columns // 2
-        sleep(1)
-        print(f"\033[u{time_to_start}")
-        time_to_start -= 1
-    print(s.RESET_ALL)
     while 1:
         clear()
         if len(room_cards) < 2 and get_remaining_cards() > 2:
@@ -212,6 +217,8 @@ def start_dungeon():
             else:
                 played_card_rank = int(played_card_rank)
             played_card_suit = played_card.split()[-1][0].upper()
+            if last_card_played != None:
+                cards_played.append(last_card_played)
             last_card_played = played_card
             print(f"You Played {played_card}")
 
@@ -336,6 +343,17 @@ def show_help():
 
 # MAIN LOOP
 while 1:
+    # REMINDER
+    clear_print(
+        f"\033[{h_center};{w_center}H{"\b" * (len(list(" Please go Fullscreen "))//2)}{b.YELLOW}{f.BLACK} Please go Fullscreen {s.RESET_ALL}")
+    print(f"\033[{h_center+1};{w_center}H{"\b" * (len(list(f" Starting in {time_to_start} Seconds! "))//2)}{b.MAGENTA} Starting in \033[s{time_to_start} Seconds! {s.RESET_ALL}")
+    while time_to_start > -1:
+        h_center = os.get_terminal_size().lines // 2
+        w_center = os.get_terminal_size().columns // 2
+        sleep(1)
+        print(f"\033[u{time_to_start}")
+        time_to_start -= 1
+    print(s.RESET_ALL)
     # AVAILABLE OPTIONS
     clear_print(
         f"{f.BLACK}{b.CYAN} Choose One of the options: \n{s.RESET_ALL}")
