@@ -6,8 +6,18 @@ import random
 import os
 
 # SYS/TERMINAL VARS
-h_center = os.get_terminal_size().lines // 2
-w_center = os.get_terminal_size().columns // 2
+terminal_size = os.get_terminal_size()
+terminal_columns = terminal_size.columns
+terminal_lines = terminal_size.lines
+h_center = terminal_lines // 2
+w_center = terminal_columns // 2
+def refresh_terminal():
+    global terminal_size, terminal_columns, terminal_lines, h_center, w_center
+    terminal_size = os.get_terminal_size()
+    terminal_columns = terminal_size.columns
+    terminal_lines = terminal_size.lines
+    h_center = terminal_lines // 2
+    w_center = terminal_columns // 2
 time_to_start = 1
 
 
@@ -96,6 +106,7 @@ def remove_card(suit, rank):
 
 
 def start_dungeon():
+    refresh_terminal()
     # DUNGEON
     room_number = 0
     room_cards = []
@@ -132,41 +143,42 @@ def start_dungeon():
         line = 1
         for text in texts:
             print(
-                f"\033[{line};{os.get_terminal_size().columns}H{"\b" * len(list(text))}{text}")
+                f"\033[{line};{terminal_columns}H{"\b" * len(list(text))}{text}")
             line += 1
         side_bar_width = 20
         cards_help_section_height = 7
-        for lines in range(os.get_terminal_size().lines - 1):
+        for lines in range(terminal_lines - 1):
             if lines + 1 == cards_help_section_height:
-                print(f"\033[{lines+1};{os.get_terminal_size().columns - side_bar_width}H┣")
+                print(f"\033[{lines+1};{terminal_columns - side_bar_width}H┣")
             else:
-                print(f"\033[{lines+1};{os.get_terminal_size().columns - side_bar_width}H┃")
+                print(f"\033[{lines+1};{terminal_columns - side_bar_width}H┃")
         for columns in range(side_bar_width):
-            print(f"\033[{cards_help_section_height};{os.get_terminal_size().columns - side_bar_width + (columns + 1)}H━")
+            print(f"\033[{cards_help_section_height};{terminal_columns - side_bar_width + (columns + 1)}H━")
 
         remaining_cards = len(suits_cards["Spades"]) + len(suits_cards["Clubs"]) + len(suits_cards["Diamonds"]) + len(suits_cards["Hearts"])
         remaining_cards_text = f"Remaining cards: {remaining_cards}"
-        print(f"\033[1;{os.get_terminal_size().columns - ( side_bar_width + 1 )}H\033[{len(list(remaining_cards_text))}D{remaining_cards_text}")
+        print(f"\033[1;{terminal_columns - ( side_bar_width + 1 )}H\033[{len(list(remaining_cards_text))}D{remaining_cards_text}")
 
         section_start_line = 10
         line = section_start_line
-        section_height = os.get_terminal_size().lines - ( section_start_line + 1 )
+        section_height = terminal_lines - ( section_start_line + 1 )
         if len(cards_played) > 0:
             if len(cards_played) < section_height:
                 cards_played.reverse()
                 for card in cards_played:
-                    print(f"\033[{line};{os.get_terminal_size().columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(card.strip())))}C{card.strip()}")
+                    print(f"\033[{line};{terminal_columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(card.strip())))}C{card.strip()}")
                     line += 1
                 cards_played.reverse()
             else:
                 cards_played.reverse()
                 for i in range(section_height - 1):
-                    print(f"\033[{line};{os.get_terminal_size().columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(cards_played[i].strip())))}C{cards_played[i].strip()}")
+                    print(f"\033[{line};{terminal_columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(cards_played[i].strip())))}C{cards_played[i].strip()}")
                     line += 1
-                print(f"\033[{line};{os.get_terminal_size().columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(cards_played[i].strip())))}C . . .")
+                print(f"\033[{line};{terminal_columns}H\033[{side_bar_width}D\033[{(side_bar_width - len(list(cards_played[i].strip())))}C . . .")
                 cards_played.reverse()
 
     while 1:
+        refresh_terminal()
         clear()
         if len(room_cards) < 2 and get_remaining_cards() > 2:
             room_number += 1
@@ -199,7 +211,7 @@ def start_dungeon():
         show_stats()
         show_help()
         card_to_play = input(
-            f"\033[{os.get_terminal_size().lines};1HWhich card to play: ")
+            f"\033[{terminal_lines};1HWhich card to play: ")
         try:
             card_to_play = int(card_to_play) - 1
             played_card = room_cards[card_to_play]
@@ -348,8 +360,8 @@ while 1:
         f"\033[{h_center};{w_center}H{"\b" * (len(list(" Please go Fullscreen "))//2)}{b.YELLOW}{f.BLACK} Please go Fullscreen {s.RESET_ALL}")
     print(f"\033[{h_center+1};{w_center}H{"\b" * (len(list(f" Starting in {time_to_start} Seconds! "))//2)}{b.MAGENTA} Starting in \033[s{time_to_start} Seconds! {s.RESET_ALL}")
     while time_to_start > -1:
-        h_center = os.get_terminal_size().lines // 2
-        w_center = os.get_terminal_size().columns // 2
+        h_center = terminal_lines // 2
+        w_center = terminal_columns // 2
         sleep(1)
         print(f"\033[u{time_to_start}")
         time_to_start -= 1
@@ -371,7 +383,7 @@ while 1:
         start_dungeon()
 
         # STAY IN THE DUNGEON
-        input(f"\033[{os.get_terminal_size().lines};{os.get_terminal_size().columns // 2 - len(list(" Press Enter to go to the main menu . . . ")) // 2}H{b.BLUE}{f.WHITE} Press Enter to go to the main menu . . . {s.RESET_ALL}")
+        input(f"\033[{terminal_lines};{terminal_columns // 2 - len(list(" Press Enter to go to the main menu . . . ")) // 2}H{b.BLUE}{f.WHITE} Press Enter to go to the main menu . . . {s.RESET_ALL}")
 
     elif op == "2":
         while 1:
